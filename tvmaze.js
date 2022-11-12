@@ -18,12 +18,8 @@ async function getShowsByTerm( term ) {
   
   return data.reduce(( show, next ) => {
     let {id, name, summary } = next.show;
-    let image = ''; 
     // next.show.image cannot be destructured if null so we handle a default image
-    !(next.show.image === null) ?
-      image = next.show.image.original :
-      image = 'https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300';
-
+    let image = checkImg(next.show.image);
     return [ ...show, { id, name, summary, image } ];
   }, [] );
 }
@@ -113,12 +109,8 @@ async function getEpisodesOfShow(id) {
     
     return data.reduce((episodes, next, idx) => {
       let { id, name, season, number } = next;
-      let image = '';
-
-      !(next.image === null) ?
-      image = next.image.original :
-      image = 'https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300';
-
+      // check if image is null if its null return a default image
+      let image = checkImg(next.image);
       return [...episodes, { id, name, season, image, number }]
     }, [] );
   } catch (error) {
@@ -126,12 +118,10 @@ async function getEpisodesOfShow(id) {
   };
 }
 
-/** Write a clear docstring for this function... */
-
-
 // populate Episodes
 function populateEpisodes(episodes) {
-  $episodesArea.empty();
+  $episodesArea.empty(); // clear out the previous episodes
+  // create an <li> element and populate information about an episode
   for (let episode of episodes) {
     const $episode = $(
       `<li data-episode-id="${episode.id}" class="Episode list-group-item">
@@ -143,9 +133,15 @@ function populateEpisodes(episodes) {
           <div><small>${episode.name}</small></div>
       </li>
    `);
-
-   
-
+    // add to DOM
     $episodesArea.append($episode);
   }
+}
+
+function checkImg(img) {
+  let image = ''
+  !(img === null) ?
+  image = img.original :
+  image = 'https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300';
+  return image;
 }
