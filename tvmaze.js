@@ -3,7 +3,7 @@
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
-
+const TVMAZE_BASE_URL = "https://api.tvmaze.com/search/shows/";
 /** Given a search term, search for tv shows that match that query.
  *
  *  Returns (promise) array of show objects: [show, show, ...].
@@ -12,9 +12,7 @@ const $searchForm = $("#searchForm");
  */
 
 async function getShowsByTerm( term ) {
-  let parameters = { params: { q: term } };
-  let tvmazeURL = "https://api.tvmaze.com/search/shows/";
-  let { data } = await axios.get(tvmazeURL, parameters);
+  let { data } = await axios.get(TVMAZE_BASE_URL, { params: { q: term } });
   
   return data.reduce(( show, next ) => {
     let {id, name, summary } = next.show;
@@ -102,7 +100,7 @@ $showsList.on('click', async function(e) {
 
 async function getEpisodesOfShow(id) { 
   if(typeof id !== 'number') throw new Error('Id is not a number')
-  let tvmazeURL = `https://api.tvmaze.com/shows/${id}/episodes`;
+  let tvmazeURL = `${TVMAZE_BASE_URL}${id}/episodes`;
 
   try {
     let {data} = await axios.get(tvmazeURL);
@@ -138,6 +136,7 @@ function populateEpisodes(episodes) {
   }
 }
 
+// checks if img is null returns image or default img
 function checkImg(img) {
   let image = ''
   !(img === null) ?
